@@ -1,0 +1,59 @@
+import {
+	getUserById,
+	getUsers,
+	loginUser,
+	registerUser,
+} from "../controllers/users.js";
+
+export function usersRoutes(app, blacklistedTokens ) {
+	app.post("/login", async (request, reply) => {
+		reply.send(await loginUser(request.body, app));
+	}).post(
+		"/logout",
+		{ preHandler: [app.authenticate] },
+		async (request, reply) => {
+			const token = request.headers["authorization"].split(" ")[1];
+
+			
+			blacklistedTokens.push(token);
+
+			reply.send({ logout: true });
+		}
+	);
+
+	app.post("/register", async (request, reply) => {
+		reply.send(await registerUser(request.body, app.bcrypt));
+	});
+
+	app.get("/users", async (request, reply) => {
+		reply.send(await getUsers());
+	});
+
+	app.get("/users/:id", async (request, reply) => {
+		reply.send(await getUserById(request.params.id));
+	});
+
+    app.post("/verifyEmail", async (request, reply) => {
+        const { id } = request.body;
+        const user = await getUserById(id);
+        if (user) {
+            user.verified = true;
+            await user.save();
+            reply.send({ success: "Email vérifié avec succès" });
+        } else {
+            reply.status(400).send({ error: "Lien de vérification invalide" });
+        }
+    });
+
+	app.get("/verifyEmail/:id", async (request, reply) => {
+        const { id } = request.params;
+        const user = await getUserById(id);
+        if (user) {
+            user.verified = true;
+            await user.save();
+            reply.send({ success: "Email vérifié avec succès" });
+        } else {
+            reply.status(400).send({ error: "Lien de vérification invalide" });
+        }
+    });
+}
