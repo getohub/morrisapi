@@ -93,8 +93,8 @@ await app
 		}
 	});
 
-server.listen(3001, () => {
-	console.log('Socket.IO écoute sur http://localhost:3001');
+server.listen(3001, '0.0.0.0', () => {
+	console.log('Socket.IO écoute sur http://0.0.0.0:3001');
 });
 
 /**********
@@ -138,13 +138,16 @@ const start = async () => {
 					error
 				);
 			});
-		await app.listen({ port: 3000 });
+		await app.listen({ 
+			port: 3000,
+			host: '0.0.0.0'
+		});
 	} catch (err) {
 		console.log(err);
 		process.exit(1);
 	}
 	console.log(
-		"Serveur Fastify lancé sur " + chalk.blue("http://localhost:3000")
+		"Serveur Fastify lancé sur " + chalk.blue("http://0.0.0.0:3000")
 	);
 	console.log(
 		chalk.bgYellow(
