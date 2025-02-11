@@ -32,8 +32,10 @@ const app = fastify();
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
 	cors: {
-		origin: '*',
+		origin: [URL_FRONT, "http://localhost:5173", "https://morris-game.netlify.app"],
 		methods: ['GET', 'POST', 'PATCH'],
+		credentials: true,
+		allowedHeaders: ["Content-Type", "Authorization"]
 	},
 });
 
@@ -47,8 +49,9 @@ await app
 		saltWorkFactor: 12,
 	})
 	.register(cors, {
-		origin: "*",
+		origin: [URL_FRONT, "http://localhost:5173", "https://morris-game.netlify.app"],
 		methods: ["GET", "POST", "PATCH"],
+		credentials: true,
 		allowedHeaders: ["Content-Type", "Authorization"]
 	})
 	.register(fastifyJWT, { secret: "unanneaupourlesgouvernertous" })
@@ -92,9 +95,10 @@ await app
 	})
 	.register(socketioServer, {
 		cors: {
-			origin: `${URL_FRONT}`,
+			origin: [URL_FRONT, "http://localhost:5173", "https://morris-teal.vercel.app"],
 			methods: ["GET", "POST", "PATCH"],
-			// allowedHeaders: ["Content-Type", "Authorization"]
+			credentials: true,
+			allowedHeaders: ["Content-Type", "Authorization"]
 		}
 	});
 
