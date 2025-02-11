@@ -15,6 +15,11 @@ import gamesRoutes from "./routes/games.js";
 //bdd
 import { sequelize } from "./bdd.js";
 
+const API_URL = import.meta.env.VITE_API_URL;
+const URL_FRONT = import.meta.env.VITE_URL_FRONT;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+const socket = io(`${SOCKET_URL}`);
+
 //Test de la connexion
 try {
 	await sequelize.authenticate();
@@ -87,7 +92,7 @@ await app
 	})
 	.register(socketioServer, {
 		cors: {
-			origin: "http://localhost:5173",
+			origin: `${URL_FRONT}`,
 			methods: ["GET", "POST", "PATCH"],
 			// allowedHeaders: ["Content-Type", "Authorization"]
 		}
@@ -101,7 +106,7 @@ server.listen(3001, '0.0.0.0', () => {
  * Routes
  **********/
 app.get("/", (request, reply) => {
-	reply.send({ documentationURL: "http://localhost:3000/documentation" });
+	reply.send({ documentationURL: `${API_URL}/documentation` });
 });
 
 // Fonction pour décoder et vérifier le token
@@ -151,7 +156,7 @@ const start = async () => {
 	);
 	console.log(
 		chalk.bgYellow(
-			"Accéder à la documentation sur http://localhost:3000/documentation"
+			"Accéder à la documentation sur", `${API_URL}/documentation`
 		)
 	);
 
@@ -233,7 +238,7 @@ const start = async () => {
 				if (shouldFinish) {
 					try {
 						// Mise à jour de la base de données
-						await fetch(`http://localhost:3000/game/${gameId}/finish`, {
+						await fetch(`${API_URL}/game/${gameId}/finish`, {
 							method: 'PATCH',
 							headers: {
 								'Content-Type': 'application/json'
