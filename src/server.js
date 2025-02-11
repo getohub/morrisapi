@@ -9,7 +9,6 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fastifyJWT from "@fastify/jwt";
 import socketioServer from "fastify-socket.io";
-import express from 'express';
 //routes
 import { usersRoutes } from "./routes/users.js";
 import gamesRoutes from "./routes/games.js";
@@ -25,7 +24,6 @@ try {
 }
 
 const app = fastify();
-const appp = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
 	cors: {
