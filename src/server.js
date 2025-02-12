@@ -19,7 +19,6 @@ import { sequelize } from "./bdd.js";
 const API_URL = process.env.VITE_API_URL;
 const URL_FRONT = process.env.VITE_URL_FRONT;
 const SOCKET_URL = process.env.VITE_SOCKET_URL;
-const socket = io(`${SOCKET_URL}`);
 
 //Test de la connexion
 try {
