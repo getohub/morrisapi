@@ -1,6 +1,7 @@
 import { Server as SocketIOServer } from "socket.io";
 import http from "http";
 import chalk from "chalk";
+import "dotenv/config";
 //pour fastify
 import fastify from "fastify";
 import fastifyBcrypt from "fastify-bcrypt";
@@ -15,9 +16,9 @@ import gamesRoutes from "./routes/games.js";
 //bdd
 import { sequelize } from "./bdd.js";
 
-const API_URL = import.meta.env.VITE_API_URL;
-const URL_FRONT = import.meta.env.VITE_URL_FRONT;
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+const API_URL = process.env.VITE_API_URL;
+const URL_FRONT = process.env.VITE_URL_FRONT;
+const SOCKET_URL = process.env.VITE_SOCKET_URL;
 const socket = io(`${SOCKET_URL}`);
 
 //Test de la connexion
