@@ -29,16 +29,19 @@ try {
 }
 
 const app = fastify();
-const server = http.createServer(app);
+const server = http.createServer(app.server);
 const io = new SocketIOServer(server, {
 	cors: {
 		origin: [
-		  'https://morris-teal.vercel.app'
+			'https://morris-teal.vercel.app',
+			'http://localhost:5173',
+			'https://morris-game.netlify.app'
 		],
 		methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
 		credentials: true,
 		allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin']
 	},
+	transports: ['websocket', 'polling']
 });
 
 let blacklistedTokens = [];
