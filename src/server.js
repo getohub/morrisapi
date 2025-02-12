@@ -1,7 +1,6 @@
-import { Server as SocketIOServer } from "socket.io";
+import { Server as SocketIO	 } from "socket.io";
 import http from "http";
 import chalk from "chalk";
-import "dotenv/config";
 //pour fastify
 import fastify from "fastify";
 import fastifyBcrypt from "fastify-bcrypt";
@@ -15,8 +14,11 @@ import { usersRoutes } from "./routes/users.js";
 import gamesRoutes from "./routes/games.js";
 //bdd
 import { sequelize } from "./bdd.js";
+import dotenv from 'dotenv';
 
-const API_URL = process.env.VITE_API_URL;
+dotenv.config();
+
+const VITE_API_URL = process.env.VITE_API_URL;
 const URL_FRONT = process.env.VITE_URL_FRONT;
 const SOCKET_URL = process.env.VITE_SOCKET_URL;
 
@@ -30,19 +32,6 @@ try {
 
 const app = fastify();
 const server = http.createServer(app.server);
-const io = new SocketIOServer(server, {
-	cors: {
-		origin: [
-			'https://morris-teal.vercel.app',
-			'http://localhost:5173',
-			'https://morris-game.netlify.app'
-		],
-		methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
-		credentials: true,
-		allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin']
-	},
-	transports: ['websocket', 'polling']
-});
 
 let blacklistedTokens = [];
 const games = {};
@@ -111,15 +100,12 @@ await app
 		}
 	});
 
-server.listen(3001, '0.0.0.0', () => {
-	console.log('Socket.IO écoute sur http://0.0.0.0:3001');
-});
 
 /**********
  * Routes
  **********/
 app.get("/", (request, reply) => {
-	reply.send({ documentationURL: `${API_URL}/documentation` });
+	reply.send({ documentationURL: `${VITE_API_URL}/documentation` });
 });
 
 // Fonction pour décoder et vérifier le token
@@ -136,6 +122,8 @@ app.decorate("authenticate", async (request, reply) => {
 		reply.send(err);
 	}
 });
+
+const io = app.io;
 
 usersRoutes(app, blacklistedTokens);
 gamesRoutes(app, io);
@@ -169,7 +157,7 @@ const start = async () => {
 	);
 	console.log(
 		chalk.bgYellow(
-			"Accéder à la documentation sur", `${API_URL}/documentation`
+			"Accéder à la documentation sur", `${VITE_API_URL}/documentation`
 		)
 	);
 
@@ -251,7 +239,7 @@ const start = async () => {
 				if (shouldFinish) {
 					try {
 						// Mise à jour de la base de données
-						await fetch(`${API_URL}/game/${gameId}/finish`, {
+						await fetch(`${VITE_API_URL}/game/${gameId}/finish`, {
 							method: 'PATCH',
 							headers: {
 								'Content-Type': 'application/json'
