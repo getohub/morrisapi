@@ -32,7 +32,12 @@ const app = fastify();
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
 	cors: {
-		origin: [URL_FRONT, "http://localhost:5173", "https://morris-game.netlify.app"],
+		origin: [
+			URL_FRONT,
+			"http://localhost:5173",
+			"https://morris-teal.vercel.app",
+			"https://morris-game.netlify.app"
+		],
 		methods: ['GET', 'POST', 'PATCH'],
 		credentials: true,
 		allowedHeaders: ["Content-Type", "Authorization"]
@@ -49,7 +54,12 @@ await app
 		saltWorkFactor: 12,
 	})
 	.register(cors, {
-		origin: [URL_FRONT, "http://localhost:5173", "https://morris-game.netlify.app"],
+		origin: [
+			URL_FRONT,
+			"http://localhost:5173", 
+			"https://morris-teal.vercel.app",
+			"https://morris-game.netlify.app"
+		  ],
 		methods: ["GET", "POST", "PATCH"],
 		credentials: true,
 		allowedHeaders: ["Content-Type", "Authorization"]
