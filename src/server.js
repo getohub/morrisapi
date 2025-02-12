@@ -31,7 +31,6 @@ try {
 }
 
 const app = fastify();
-const server = http.createServer(app.server);
 
 let blacklistedTokens = [];
 const games = {};
@@ -186,7 +185,7 @@ const start = async () => {
 			// Create player info with username
 			const playerInfo = {
 				id: userId,
-				username: username || `Player ${role}`,
+				username: username,
 				role: role,
 				isCreator: isCreator,
 				isReady: false
