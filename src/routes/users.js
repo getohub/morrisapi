@@ -33,17 +33,6 @@ export function usersRoutes(app, blacklistedTokens ) {
 		reply.send(await getUserById(request.params.id));
 	});
 
-    app.post("/verifyEmail", async (request, reply) => {
-        const { id } = request.body;
-        const user = await getUserById(id);
-        if (user) {
-            user.verified = true;
-            await user.save();
-            reply.send({ success: "Email vérifié avec succès" });
-        } else {
-            reply.status(400).send({ error: "Lien de vérification invalide" });
-        }
-    });
 
 	app.get("/verifyEmail/:id", async (request, reply) => {
 		try {
