@@ -152,7 +152,7 @@ const start = async () => {
 		process.exit(1);
 	}
 	console.log(
-		"Serveur Fastify lancé sur " + chalk.blue("http://0.0.0.0:3000")
+		"Serveur Fastify lancé sur " + chalk.blue(`${VITE_API_URL}`)
 	);
 	console.log(
 		chalk.bgYellow(

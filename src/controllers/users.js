@@ -46,48 +46,72 @@ export async function findAndCountAllUsersByUsername(username) {
 	});
 }
 export async function registerUser(userDatas, bcrypt) {
-	
-	if (!userDatas) {
-		return { error: "Aucune donnée à enregistrer" };
+	try {
+		if (!userDatas) {
+			return { error: "Aucune donnée à enregistrer" };
+		}
+		const { firstname, lastname, username, email, password } = userDatas;
+		if (!firstname || !lastname || !username || !email || !password) {
+			return { error: "Tous les champs sont obligatoires" };
+		}
+		
+		const { count: emailCount } = await findAndCountAllUsersByEmail(email);
+		if (emailCount > 0) {
+			return { error: "L'adresse email est déjà utilisée." };
+		}
+		
+		const { count: usernameCount } = await findAndCountAllUsersByUsername(username);
+		if (usernameCount > 0) {
+			return { error: "Le nom d'utilisateur est déjà utilisé." };
+		}
+
+		if (usernameCount > 0) {
+			return { error: "Le nom d'utilisateur est déjà utilisé." };
+		}
+
+		let id = await generateID(
+			(lastname.substring(0, 3) + firstname.substring(0, 3)).toUpperCase()
+		);
+
+		const hashedPassword = await bcrypt.hash(password);
+		
+		const user = {
+			id,
+			firstname,
+			lastname,
+			username,
+			email,
+			password: hashedPassword,
+			verified: false
+		};
+
+		const newUser = await User.create(user);
+
+		try {
+			await sendVerificationEmail(
+				user.id, 
+				email, 
+				'Vérification de votre compte Morris Game'
+			);
+			return {
+				success: true,
+				message: "Inscription réussie. Veuillez vérifier votre email.",
+				userId: user.id
+			};
+		} catch (emailError) {
+			// Si l'envoi d'email échoue, on supprime l'utilisateur créé
+			await user.destroy();
+			return { 
+				error: "Erreur lors de l'envoi de l'email de vérification. Veuillez réessayer." 
+			};
+		}
+
+	} catch (error) {
+		console.error('Registration error:', error);
+		return { 
+			error: "Une erreur est survenue lors de l'inscription. Veuillez réessayer." 
+		};
 	}
-	const { firstname, lastname, username, email, password } = userDatas;
-	if (!firstname || !lastname || !username || !email || !password) {
-		return { error: "Tous les champs sont obligatoires" };
-	}
-	
-	const { count: emailCount } = await findAndCountAllUsersByEmail(email);
-	if (emailCount > 0) {
-		return { error: "L'adresse email est déjà utilisée." };
-	}
-	
-	const { count: usernameCount } = await findAndCountAllUsersByUsername(
-		username
-	);
-
-	if (usernameCount > 0) {
-		return { error: "Le nom d'utilisateur est déjà utilisé." };
-	}
-
-	let id = await generateID(
-		(lastname.substring(0, 3) + firstname.substring(0, 3)).toUpperCase()
-	);
-
-	const hashedPassword = await bcrypt.hash(password);
-	
-	const user = {
-		id,
-		firstname,
-		lastname,
-		username,
-		email,
-		password: hashedPassword,
-	};
-
-	const newUser = await User.create(user);
-
-	await sendVerificationEmail(newUser.id, email, 'Vérification de votre adresse email');
-
-	return newUser;
 }
 
 export async function loginUser(userDatas, app) {
