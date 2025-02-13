@@ -21,7 +21,9 @@ const verificationEmailHtmlTemplate = fs.readFileSync(path.resolve(__dirname, '.
 
 export const sendVerificationEmail = (userId, email, subject) => {
     
-    const verificationEmailHtml = verificationEmailHtmlTemplate.replace(/\{\{id\}\}/g, userId);
+    const verificationEmailHtml = verificationEmailHtmlTemplate
+        .replace(/\{\{id\}\}/g, userId)
+        .replace(/\{\{URL_FRONT\}\}/g, URL_FRONT);
 
     const mailOptions = {
         from: {
