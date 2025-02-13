@@ -46,14 +46,26 @@ export function usersRoutes(app, blacklistedTokens ) {
     });
 
 	app.get("/verifyEmail/:id", async (request, reply) => {
-        const { id } = request.params;
-        const user = await getUserById(id);
-        if (user) {
-            user.verified = true;
-            await user.save();
-            reply.send({ success: "Email vérifié avec succès" });
-        } else {
-            reply.status(400).send({ error: "Lien de vérification invalide" });
-        }
+		try {
+			const { id } = request.params;
+			const user = await getUserById(id);
+
+			if (!user) {
+				return reply.status(400).send({ error: "Utilisateur non trouvé" });
+			}
+        
+			if (user.verified) {
+				return reply.send({ success: "Email déjà vérifié" });
+			}
+
+			user.verified = true;
+			await user.save();
+
+			reply.send({ success: "Email vérifié avec succès" });
+			
+		} catch (error) {
+			console.error('Erreur de vérification:', error);
+			reply.status(400).send({ error: "Erreur lors de la vérification de l'email" });
+		}
     });
 }
